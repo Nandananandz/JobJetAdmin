@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:jobjetadmin/Screens/HomeScreen/Components/HomeCard.dart';
+import 'package:jobjetadmin/Screens/HomeScreen/Components/HomeIntro.dart';
+import 'package:jobjetadmin/Screens/HomeScreen/Components/Searchbar.dart';
+import 'package:jobjetadmin/Screens/HomeScreen/HomeScreen.dart';
+
+import 'package:jobjetadmin/Screens/HomeScreen/Views/components/JobAddCard.dart';
+
+
 import 'package:jobjetadmin/Screens/LoginScreen/LoginScreen.dart';
 import 'package:sizer/sizer.dart';
 double width = 4.14;
@@ -18,7 +26,7 @@ class JobJetAdmin extends StatelessWidget {
       builder: (context, Orientation ,DeviceType) {
         return MaterialApp(
          
-          home: LoginScreen(),
+          home: HomeScreen(),
         );
       }
     );
