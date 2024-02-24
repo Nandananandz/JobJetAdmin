@@ -1,18 +1,21 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jobjetadmin/Screens/HomeScreen/Components/HomeCard.dart';
 import 'package:jobjetadmin/Screens/HomeScreen/HomeScreen.dart';
 import 'package:sizer/sizer.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  @override
   Widget build(BuildContext context) {
-    return  SafeArea(
+    return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
           child: Column(
@@ -90,20 +93,20 @@ class LoginScreen extends StatelessWidget {
               ],
              ),
              SizedBox(height: 2.h,),
-                Container(
-                        alignment: Alignment.center,
-                        width: 86.2.w,
-                        height: 6.7.h,
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),
-                        color: const Color.fromARGB(255, 65, 33, 243),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Get.to(()=>HomeScreen());
-                          },
-                          child: Text("Sign up",style:GoogleFonts.poppins(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 16.2.sp)  )
+                InkWell(
+                  onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                  },
+                  child: Container(
+                          alignment: Alignment.center,
+                          width: 86.2.w,
+                          height: 6.7.h,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),
+                          color: const Color.fromARGB(255, 65, 33, 243),
                           ),
-                      
+                          child: Text("Sign up",style:GoogleFonts.poppins(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 16.2.sp)  ),
+                        
+                  ),
                 )
             ]
           ),
@@ -112,4 +115,3 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-

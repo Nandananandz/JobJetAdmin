@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jobjetadmin/main.dart';
+
 import 'package:sizer/sizer.dart';
 
 class JobAddScreen extends StatelessWidget {
@@ -23,9 +24,9 @@ class JobAddScreen extends StatelessWidget {
                   SizedBox(width: 2.w,),
                   InkWell(
                     onTap: () { 
-                      Navigator.pop(context);
+                     Navigator.pop(context);
                      },
-                    child: Icon(Icons.arrow_back_ios_new_rounded,size: 2.h,color: Color(0xff343434),),
+                    child: Icon(Icons.arrow_back_ios_new_rounded,size: 6.w,color: Color(0xff343434),),
                   ),
                     SizedBox(width: 2.w,),
                   Text('Add New Job',
