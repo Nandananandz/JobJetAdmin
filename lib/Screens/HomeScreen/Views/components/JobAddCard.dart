@@ -76,20 +76,25 @@ class JobAddScreen extends StatelessWidget {
                   _textbox("Joining Date"),
                   SizedBox(height: 3.h,),
               Center(
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 5.h,
-                  width: 79.w,
-                  decoration: BoxDecoration(
-                    color: Color(0xFF1F41BA),
-                    borderRadius:BorderRadius.circular(5.61.h),
-                  ),
-                  child: Text('Submit Post',
-                  style: GoogleFonts.poppins(
-                    fontSize: 11.66.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFFFFFFF)
-                  ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: 5.h,
+                    width: 79.w,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1F41BA),
+                      borderRadius:BorderRadius.circular(5.61.h),
+                    ),
+                    child: Text('Submit Post',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11.66.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFFFFFFFF)
+                    ),
+                    ),
                   ),
                 ),
               ),
