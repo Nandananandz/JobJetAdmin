@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jobjetadmin/Screens/HomeScreen/Components/HomeCard.dart';
 import 'package:jobjetadmin/Screens/HomeScreen/Components/HomeIntro.dart';
 import 'package:jobjetadmin/Screens/HomeScreen/Components/Searchbar.dart';
-import 'package:jobjetadmin/Screens/HomeScreen/Views/components/Bottonbar.dart';
+
 import 'package:sizer/sizer.dart';
 
 class HomeScreen extends StatelessWidget {
