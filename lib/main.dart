@@ -26,7 +26,7 @@ class JobJetAdmin extends StatelessWidget {
       builder: (context, Orientation ,DeviceType) {
         return MaterialApp(
          
-          home: HomeScreen(),
+          home: LoginScreen(),
         );
       }
     );
