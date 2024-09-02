@@ -1,7 +1,14 @@
+import 'package:carousel_slider/carousel_options.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jobjetadmin/Screens/HomeScreen/HomeScreen.dart';
+import 'package:jobjetadmin/Screens/HomeScreen/Views/components/deletePostPopUp.dart';
+import 'package:jobjetadmin/Screens/HomeScreen/Views/components/jobEditCard.dart';
+import 'package:jobjetadmin/Screens/HomeScreen/service/Controller.dart';
 import 'package:lit_relative_date_time/controller/relative_date_format.dart';
 import 'package:lit_relative_date_time/model/relative_date_time.dart';
 import 'package:readmore/readmore.dart';
@@ -11,29 +18,14 @@ class homecard extends StatelessWidget {
   var jobData;
   homecard({super.key, required this.jobData});
 
-  String releativeTime(String time, BuildContext context) {
-    DateTime otherTime = DateTime.parse(time);
-    RelativeDateTime _relativeDateTime =
-        RelativeDateTime(dateTime: DateTime.now(), other: otherTime);
-    RelativeDateFormat _relativeDateFormatter = RelativeDateFormat(
-      Localizations.localeOf(context),
-    );
-
-    return _relativeDateFormatter.format(_relativeDateTime);
-  }
-
-  String idToLocation(int id) {
-    for (var data in fullLocation) {
-      if (data["id"] == id) {
-        return data["name"];
-      }
-    }
-    return "--";
-  }
+  JobController ctrl = Get.put(JobController());
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return InkWell(
+      onTap: () {
+        print(jobData);
+      },
       child: Container(
         padding: EdgeInsets.only(left: 3.4.w, right: 3.4.w),
         // height: 62.98.h,
@@ -56,11 +48,9 @@ class homecard extends StatelessWidget {
                         Image.network(jobData["categories"][0]["image"]["url"]),
                   ),
                 ),
-
                 SizedBox(
                   width: 2.89.w,
                 ),
-
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,9 +65,9 @@ class homecard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'Posted on : ${releativeTime(jobData["created_at"], context)}',
+                            'Posted on : ${ctrl.releativeTime(jobData["created_at"], context)}',
                             style: GoogleFonts.nunitoSans(
-                                fontSize: 10.sp,
+                                fontSize: 9.sp,
                                 fontWeight: FontWeight.w700,
                                 color: Color.fromRGBO(0, 0, 0, 80)),
                           ),
@@ -90,25 +80,56 @@ class homecard extends StatelessWidget {
                             size: 12,
                           ),
                           SizedBox(
-                            width: 10,
+                            width: 5,
                           ),
-                          Text(
-                            idToLocation(jobData["location_id"]),
-                            style: GoogleFonts.nunitoSans(
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.w700,
-                                color: Color.fromRGBO(0, 0, 0, 80)),
+                          Expanded(
+                            child: Text(
+                              ctrl.idToLocation(jobData["location_id"]),
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
+                              style: GoogleFonts.nunitoSans(
+                                  fontSize: 9.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color.fromRGBO(0, 0, 0, 80)),
+                            ),
                           )
                         ],
                       )
                     ],
                   ),
                 ),
-
-                // Image.asset("assets/like.png",
-                // height:2.70.h,
-                // width:6.20.w,
-                // )
+                PopupMenuButton(
+                    color: Colors.white,
+                    icon: Icon(Icons.more_vert),
+                    position: PopupMenuPosition.under,
+                    onSelected: (value) {
+                      if (value == 1) {
+                        showDialog(
+                            context: context,
+                            builder: (ctx) => Container(
+                                alignment: Alignment.center,
+                                child: Material(
+                                    color: Colors.transparent,
+                                    child: DeletePostPopUp(
+                                      jobData: jobData,
+                                    ))));
+                      } else {
+                        Get.to(() => JobEditScreen(jobData: jobData),
+                            transition: Transition.rightToLeft);
+                      }
+                    },
+                    itemBuilder: (context) {
+                      return [
+                        PopupMenuItem<int>(
+                          value: 0,
+                          child: Text("Edit"),
+                        ),
+                        PopupMenuItem<int>(
+                          value: 1,
+                          child: Text("Delete"),
+                        ),
+                      ];
+                    })
               ],
             ),
             SizedBox(
@@ -119,8 +140,8 @@ class homecard extends StatelessWidget {
               trimLines: 4,
               colorClickableText: Color(0xFF000000),
               trimMode: TrimMode.Line,
-              trimCollapsedText: 'see more',
-              trimExpandedText: '..see less',
+              trimCollapsedText: '...see more',
+              trimExpandedText: '',
               moreStyle: GoogleFonts.nunitoSans(
                 fontSize: 10.sp,
                 fontWeight: FontWeight.w600,
@@ -140,10 +161,19 @@ class homecard extends StatelessWidget {
               height: 10,
             ),
             if (jobData["image"] != null)
-              Container(
-                height: 41.46.h,
-                width: 99.27.w,
-                child: Image.network(jobData["image"]["url"]),
+              CarouselSlider(
+                options: CarouselOptions(viewportFraction: 1, autoPlay: true),
+                items: [
+                  for (var data in jobData["image"])
+                    Container(
+                      height: 41.46.h,
+                      width: 99.27.w,
+                      child: Image.network(
+                        data["original"],
+                        fit: BoxFit.fill,
+                      ),
+                    ),
+                ],
               ),
           ],
         ),

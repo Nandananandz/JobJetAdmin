@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:carousel_slider/carousel_slider.dart';
@@ -20,17 +19,41 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:multiselect/multiselect.dart';
 import 'package:sizer/sizer.dart';
 
-class JobAddScreen extends StatefulWidget {
+class JobEditScreen extends StatefulWidget {
   //ValueNotifier notifier;
-  JobAddScreen({
-    super.key,
-  });
+  var jobData;
+  JobEditScreen({super.key, required this.jobData});
 
   @override
-  State<JobAddScreen> createState() => _JobAddScreenState();
+  State<JobEditScreen> createState() => _JobEditScreenState(jobData: jobData);
 }
 
-class _JobAddScreenState extends State<JobAddScreen> {
+class _JobEditScreenState extends State<JobEditScreen> {
+  var jobData;
+  _JobEditScreenState({required this.jobData});
+
+  List imageList = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    JobHeading.text = jobData["job_title"] ?? "";
+    location.text = ctrl.idToLocation(jobData["location_id"]);
+    category.text =
+        jobData["categories"].map((e) => e["name"]).toList().join(",");
+    content.text = jobData["content"] ?? "";
+    email.text = jobData["email"] ?? "";
+    phoneNumber.text = jobData["phone"] ?? "";
+    experience.text = jobData["experience_required"] ?? "";
+    salary.text = jobData["salary"] ?? "";
+    joiningTime.text = jobData["joining_time"] ?? "";
+
+    ///  imageList = [...jobData["image"]] ?? [];
+    //print(imageList);
+    super.initState();
+  }
+
   TextEditingController JobHeading = TextEditingController();
   TextEditingController location = TextEditingController();
   TextEditingController content = TextEditingController();
@@ -72,7 +95,7 @@ class _JobAddScreenState extends State<JobAddScreen> {
                   width: 2.w,
                 ),
                 Text(
-                  'Add New Job',
+                  'Update  Job',
                   style: GoogleFonts.poppins(
                       fontSize: 16.66.sp,
                       fontWeight: FontWeight.w600,
@@ -103,16 +126,12 @@ class _JobAddScreenState extends State<JobAddScreen> {
                             alignment: Alignment.centerLeft,
                             height: 4.94.h,
                             width: 84.78.w,
-                            padding: EdgeInsets.only(right: 4.2.w),
+                            // padding: EdgeInsets.symmetric(horizontal: 4.2.w),
                             decoration: BoxDecoration(
                               border: Border.all(color: Color(0xFFCBCBCB)),
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: DropDownMultiSelect(
-                              icon: Icon(
-                                Icons.arrow_drop_down,
-                                color: Colors.black26,
-                              ),
                               childBuilder: (selectedValues) => Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 3.w),
                                 child: Text(
@@ -142,125 +161,146 @@ class _JobAddScreenState extends State<JobAddScreen> {
                     ),
                     _textfield("Job Heading", JobHeading),
                     _textbox("Locations", ctrl.locationNameList, location),
-                    _textfield("Content", content, height: 30, pad: true,
-                        onChange: (val) {
-                      if (val.length > 300) {
-                        setState(() {
-                          Fluttertoast.showToast(
-                              msg: "Maximum content lenght is 300 character");
-                          content.text = val.substring(0, 300);
-                        });
-                      }
-                    },
+                    _textfield("Content", content,
+                        height: 30,
+                        pad: true,
                         keytype: TextInputType.multiline,
                         ver: TextAlignVertical.top),
-                    _textfield(
-                      "Email",
-                      email,
-                    ),
-                    _textfield("Phone", phoneNumber, onChange: (val) {
-                      setState(() {
-                        final String phonePattern = r'^\+?[0-9]{7,12}$';
+                    _textfield("Email", email),
+                    _textfield("Phone", phoneNumber,
+                        keytype: TextInputType.number),
+                    if (false)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: InkWell(
+                          onTap: () async {
+                            final img = await ImagePicker.platform
+                                .getImageFromSource(
+                                    source: ImageSource.gallery);
 
-                        if (!RegExp(phonePattern).hasMatch(val)) {
-                          phoneNumber.text = phoneNumber.text.substring(0, 12);
-                          setState(() {});
-                          Fluttertoast.showToast(
-                              msg: "Enter Valid Phone Number");
-                        }
-                      });
-                    }, keytype: TextInputType.number),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: InkWell(
-                        onTap: () async {
-                          final img = await ImagePicker.platform
-                              .getImageFromSource(source: ImageSource.gallery);
-
-                          if (img != null) {
-                            setState(() {
-                              imageFile.add(File(img.path));
-                            });
-                          }
-                        },
-                        child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 4.2.w),
-                          alignment: Alignment.center,
-                          height: 5.h,
-                          width: 40.78.w,
-                          child: Text(
-                            "Upload Image",
-                            style: GoogleFonts.poppins(
-                                fontSize: 10.sp, fontWeight: FontWeight.w600),
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Color(0xFFCBCBCB)),
-                            borderRadius: BorderRadius.circular(15),
+                            if (img != null) {
+                              setState(() {
+                                imageFile.add(File(img.path));
+                              });
+                            }
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(horizontal: 4.2.w),
+                            alignment: Alignment.center,
+                            height: 5.h,
+                            width: 40.78.w,
+                            child: Text(
+                              "Upload Image",
+                              style: GoogleFonts.poppins(
+                                  fontSize: 10.sp, fontWeight: FontWeight.w600),
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Color(0xFFCBCBCB)),
+                              borderRadius: BorderRadius.circular(15),
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     SizedBox(
                       height: 20,
                     ),
-                    if (imageFile.isNotEmpty)
-                      CarouselSlider(
-                          items: [
-                            for (File data in imageFile)
-                              Container(
-                                  height: 38.46.h,
-                                  width: 100.w,
-                                  padding: EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: Color(0xFFCBCBCB)),
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Container(
-                                        height: 38.46.h,
-                                        width: 100.w,
-                                        child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                            child: Image.file(
-                                              data!,
-                                              fit: BoxFit.fill,
-                                            )),
-                                      ),
-                                      Positioned(
-                                          top: 10,
-                                          right: 10,
-                                          child: InkWell(
-                                            onTap: () {
-                                              imageFile.remove(data);
-                                              setState(() {});
-                                            },
-                                            child: CircleAvatar(
-                                              backgroundColor: Colors.white60,
-                                              child: Icon(Icons.delete),
-                                            ),
-                                          ))
-                                    ],
-                                  )),
-                          ],
-                          options: CarouselOptions(
-                            height: 38.46.h,
-                            aspectRatio: 16 / 9,
-                            viewportFraction: 1,
-                            initialPage: 0,
-                            enableInfiniteScroll: false,
-                            reverse: false,
-                            autoPlay: true,
-                            autoPlayInterval: Duration(seconds: 3),
-                            autoPlayAnimationDuration:
-                                Duration(milliseconds: 800),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            enlargeCenterPage: true,
-                            enlargeFactor: 0.3,
-                            scrollDirection: Axis.horizontal,
-                          )),
+                    if (false)
+                      if (imageFile.isNotEmpty || imageList.isNotEmpty)
+                        CarouselSlider(
+                            items: [
+                              for (File data in imageFile)
+                                Container(
+                                    height: 38.46.h,
+                                    width: 100.w,
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: Color(0xFFCBCBCB)),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          height: 38.46.h,
+                                          width: 100.w,
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              child: Image.file(
+                                                data!,
+                                                fit: BoxFit.fill,
+                                              )),
+                                        ),
+                                        // Positioned(
+                                        //     top: 10,
+                                        //     right: 10,
+                                        //     child: InkWell(
+                                        //       onTap: () {
+                                        //         imageFile.remove(data);
+                                        //         setState(() {});
+                                        //       },
+                                        //       child: CircleAvatar(
+                                        //         backgroundColor: Colors.white60,
+                                        //         child: Icon(Icons.delete),
+                                        //       ),
+                                        //     ))
+                                      ],
+                                    )),
+                              for (var data in imageList)
+                                Container(
+                                    height: 38.46.h,
+                                    width: 100.w,
+                                    padding: EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      border:
+                                          Border.all(color: Color(0xFFCBCBCB)),
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Container(
+                                          height: 38.46.h,
+                                          width: 100.w,
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              child: Image.network(
+                                                data!["original"],
+                                                fit: BoxFit.fill,
+                                              )),
+                                        ),
+                                        Positioned(
+                                            top: 10,
+                                            right: 10,
+                                            child: InkWell(
+                                              onTap: () {
+                                                imageList.remove(data);
+                                                setState(() {});
+                                              },
+                                              child: CircleAvatar(
+                                                backgroundColor: Colors.white60,
+                                                child: Icon(Icons.delete),
+                                              ),
+                                            ))
+                                      ],
+                                    )),
+                            ],
+                            options: CarouselOptions(
+                              height: 38.46.h,
+                              aspectRatio: 16 / 9,
+                              viewportFraction: 1,
+                              initialPage: 0,
+                              enableInfiniteScroll: false,
+                              reverse: false,
+                              autoPlay: true,
+                              autoPlayInterval: Duration(seconds: 3),
+                              autoPlayAnimationDuration:
+                                  Duration(milliseconds: 800),
+                              autoPlayCurve: Curves.fastOutSlowIn,
+                              enlargeCenterPage: true,
+                              enlargeFactor: 0.3,
+                              scrollDirection: Axis.horizontal,
+                            )),
                     Container(
                       margin: EdgeInsets.symmetric(
                         horizontal: 3.w,
@@ -302,26 +342,10 @@ class _JobAddScreenState extends State<JobAddScreen> {
                           SizedBox(
                             height: 15,
                           ),
-                          _textbox(
-                              'Experience',
-                              [
-                                "1",
-                                "2",
-                                "3",
-                                "4",
-                                "5",
-                                "6",
-                                "7",
-                                "8",
-                                "9",
-                                "10"
-                              ],
-                              ctrl.experience),
-                          // _textfield("Experience", experience,
-                          //     keytype: TextInputType.number),
+                          _textfield("Experience", experience,
+                              keytype: TextInputType.number),
                           _textfield("Salary", salary,
                               keytype: TextInputType.number),
-                          //  _textfield("Date of Joining", joiningTime),
                           _textbox(
                               "Date of Joining",
                               [
@@ -330,6 +354,7 @@ class _JobAddScreenState extends State<JobAddScreen> {
                                 "Within 2 weeks",
                                 "Within 1 month",
                                 "Within 2 months",
+                                "Within 6 months"
                               ],
                               joiningTime),
                         ],
@@ -341,17 +366,7 @@ class _JobAddScreenState extends State<JobAddScreen> {
             Center(
               child: InkWell(
                 onTap: () async {
-                  final RegExp emailRegex = RegExp(
-                    r'^[a-zA-Z0-9]+[a-zA-Z0-9._%-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$',
-                  );
-
-                  if (!emailRegex.hasMatch(email.text)) {
-                    Fluttertoast.showToast(
-                        msg: "Please enter a valid mail id ");
-                  } else if (salary.text.isNotEmpty && !salary.text.isNum) {
-                    Fluttertoast.showToast(
-                        msg: "Please enter valid salary amount");
-                  } else if (JobHeading.text.isNotEmpty &&
+                  if (JobHeading.text.isNotEmpty &&
                       category.text.isNotEmpty &&
                       location.text.isNotEmpty &&
                       content.text.isNotEmpty &&
@@ -373,36 +388,44 @@ class _JobAddScreenState extends State<JobAddScreen> {
                     });
 
                     http.StreamedResponse response = await request.send();
+                    print(response.statusCode);
 
                     if (response.statusCode == 200 ||
                         response.statusCode == 302) {
-                      final contentupload =
-                          await http.post(Uri.parse(baseUrl + "jobs/"),
-                              headers: {
-                                'Content-Type': 'application/json',
-                                "Authorization": "Bearer $token",
-                                "Vary": "Accept"
-                              },
-                              body: json.encode({
-                                "job_title": JobHeading.text,
-                                "location_id": locationtoID(location
-                                    .text), // Assuming you have the location_id of the job
-                                "content": content.text,
-                                "email": email.text,
-                                "phone": phoneNumber.text,
-                                "categories": [
-                                  for (var data in category.text.split(","))
-                                    categoryToID(data)
-                                ],
-                                "status": "opened",
+                      final contentupload = await http.patch(
+                          Uri.parse(baseUrl + "jobs/${jobData["id"]}"),
+                          headers: {
+                            'Content-Type': 'application/json',
+                            "Authorization": "Bearer $token",
+                            "Vary": "Accept"
+                          },
+                          body: json.encode({
+                            "job_title": JobHeading.text,
+                            "location_id": locationtoID(location
+                                .text), // Assuming you have the location_id of the job
+                            "content": content.text,
+                            "email": email.text,
+                            "phone": phoneNumber.text,
+                            "categories": [
+                              for (var data in category.text.split(","))
+                                categoryToID(data)
+                            ],
+                            "status": "opened",
+                            if (imageFile.isNotEmpty || imageList.isNotEmpty)
+                              "image": [
                                 if (imageFile.isNotEmpty)
-                                  "image": json.decode(
-                                      await response.stream.bytesToString()),
-                                "experience_required": experience.text,
-                                "salary": salary.text,
-                                "joining_time": joiningTime.text,
-                                "is_active": true
-                              }));
+                                  for (var data in json.decode(
+                                      await response.stream.bytesToString()))
+                                    data,
+                                for (var data in imageList) data
+                              ]
+                            else
+                              "image": [],
+                            "experience_required": experience.text,
+                            "salary": salary.text,
+                            "joining_time": joiningTime.text,
+                            "is_active": true
+                          }));
                       print(contentupload.body);
                       print(contentupload.statusCode);
                       setState(() {
@@ -423,8 +446,7 @@ class _JobAddScreenState extends State<JobAddScreen> {
                       }
                     }
                   } else {
-                    Fluttertoast.showToast(
-                        msg: "Please fill all required fields");
+                    Fluttertoast.showToast(msg: "Please fill required field");
                   }
                 },
                 child: Container(
@@ -460,7 +482,6 @@ class _JobAddScreenState extends State<JobAddScreen> {
   _textfield(String text, TextEditingController value,
       {double height = 4.94,
       TextInputType keytype = TextInputType.name,
-      Function? onChange(String val)?,
       bool pad = false,
       TextAlignVertical ver = TextAlignVertical.center}) {
     return Column(
@@ -486,11 +507,6 @@ class _JobAddScreenState extends State<JobAddScreen> {
             textAlignVertical: ver, // TextAlignVertical.center,
             expands: true,
             maxLines: null,
-            onChanged: (value) {
-              if (onChange != null) {
-                onChange(value);
-              }
-            },
             decoration: InputDecoration(
                 border: InputBorder.none,
                 isDense: true,

@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
+import 'package:jobjetadmin/FogotPasswordPopUp.dart';
 import 'package:jobjetadmin/Screens/HomeScreen/HomeScreen.dart';
+import 'package:jobjetadmin/Screens/LoginScreen/ForgotPassword.dart';
 import 'package:jobjetadmin/main.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,18 +52,21 @@ class _LoginScreenState extends State<LoginScreen> {
           Text(
             "Admin Login",
             style: GoogleFonts.poppins(
-                color: Color(0xff1F41FF),
-                fontSize: 25.sp,
+                color: Color(0xff1F41BB),
+                fontSize: 24.sp,
                 fontWeight: FontWeight.w600),
+          ),
+          SizedBox(
+            height: 10,
           ),
           Container(
               alignment: Alignment.center,
               // height: 6.8.h,
-              width: 62.w,
+              width: 70.w,
               child: Text(
                 "Welcome back you’ve been missed!",
                 style: GoogleFonts.poppins(
-                    fontSize: 16.sp, fontWeight: FontWeight.w500),
+                    fontSize: 15.sp, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
               )),
           SizedBox(
@@ -101,25 +106,32 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          SizedBox(
-            height: 2.h,
-          ),
-          if (false)
-            Row(
-              children: [
-                Expanded(child: Container()),
-                Text(
+          Row(
+            children: [
+              Expanded(child: Container()),
+              InkWell(
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (ctx) => Container(
+                          alignment: Alignment.center,
+                          child: Material(
+                              color: Colors.transparent,
+                              child: FogotPasswordPopUp())));
+                },
+                child: Text(
                   "Forgot your password?",
                   style: GoogleFonts.poppins(
                       color: Color(0xff1F41BB),
                       fontWeight: FontWeight.w600,
-                      fontSize: 11.6.sp),
+                      fontSize: 10.6.sp),
                 ),
-                SizedBox(
-                  width: 3.5.w,
-                ),
-              ],
-            ),
+              ),
+              SizedBox(
+                width: 4.2.w,
+              ),
+            ],
+          ),
           SizedBox(
             height: 2.h,
           ),
@@ -135,6 +147,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
               loading = false;
               setState(() {});
+              print(Response.statusCode);
+              print(Response.body);
               if (Response.statusCode == 200) {
                 print(Response.statusCode);
                 var data = json.decode(Response.body);
@@ -159,16 +173,16 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 6.7.h,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
-                color: const Color.fromARGB(255, 65, 33, 243),
+                color: Color(0xFF41F41BB),
               ),
               child: (loading)
                   ? LoadingAnimationWidget.staggeredDotsWave(
                       color: Colors.white, size: 24)
-                  : Text("Sign up",
+                  : Text("Sign in",
                       style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
-                          fontSize: 16.2.sp)),
+                          fontSize: 14.2.sp)),
             ),
           )
         ]),

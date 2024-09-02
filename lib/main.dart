@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:jobjetadmin/Screens/HomeScreen/Components/HomeCard.dart';
 import 'package:jobjetadmin/Screens/HomeScreen/Components/HomeIntro.dart';
 import 'package:jobjetadmin/Screens/HomeScreen/Components/Searchbar.dart';
@@ -15,6 +17,7 @@ double width = 4.14;
 double height = 8.9;
 double fontsize = 1.2;
 String? login;
+var AuthHeader;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences pref = await SharedPreferences.getInstance();
@@ -22,6 +25,28 @@ void main() async {
   token = pref.getString("TOKEN");
 
   login = pref.getString("STATUS");
+
+  AuthHeader = {
+    'Content-Type': 'application/json',
+    "Authorization": "Bearer $token",
+    "Vary": "Accept"
+  };
+
+  if (login == "IN") {
+    final Response =
+        await get(Uri.parse(baseUrl + "auth/profile"), headers: AuthHeader);
+
+    if (Response.statusCode == 200) {
+      try {
+        // profileData = json.decode(Response.body);
+      } catch (e) {
+        login = "OUT";
+      }
+    } else {
+      login = "OUT";
+    }
+  }
+
   runApp(JobJetAdmin());
 }
 
@@ -32,7 +57,7 @@ class JobJetAdmin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Sizer(builder: (context, Orientation, DeviceType) {
-      return MaterialApp(
+      return GetMaterialApp(
         home: (login == "IN") ? HomeScreen() : LoginScreen(),
       );
     });
